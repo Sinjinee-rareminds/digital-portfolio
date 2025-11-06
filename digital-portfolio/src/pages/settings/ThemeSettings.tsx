@@ -71,7 +71,7 @@ const ThemeSettings: React.FC = () => {
               <ThemeToggle />
               <button
                 onClick={handleSaveSettings}
-                className="flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white rounded-lg hover:shadow-lg transition-all"
+                className="flex items-center px-6 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 dark:from-indigo-500 dark:to-blue-500 text-white rounded-lg hover:shadow-lg transition-all"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save Changes
@@ -85,7 +85,7 @@ const ThemeSettings: React.FC = () => {
       <div className="max-w-4xl mx-auto p-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
           <div className="flex items-center space-x-3 mb-8">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
               <Palette className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -109,7 +109,7 @@ const ThemeSettings: React.FC = () => {
                     {theme === 'light' ? 'Bright and clean interface' : 'Easy on the eyes at night'}
                   </p>
                 </div>
-                <ThemeToggle showLabel />
+                <ThemeToggle />
               </div>
             </div>
 
@@ -221,7 +221,7 @@ const ThemeSettings: React.FC = () => {
           <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={handleSaveSettings}
-              className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white rounded-lg hover:shadow-xl transition-all font-semibold"
+              className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 dark:from-indigo-500 dark:to-blue-500 text-white rounded-lg hover:shadow-xl transition-all font-semibold"
             >
               Save Theme Settings
             </button>

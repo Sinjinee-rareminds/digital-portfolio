@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Share2, Link2, Globe, Lock, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Share2, Link2, Globe, Lock, Copy, Check, Linkedin, Twitter, Mail, MessageCircle } from 'lucide-react';
 import { usePortfolio } from '../../contexts/PortfolioContext';
 import ThemeToggle from '../../components/ThemeToggle';
 import { generateQRCode, downloadQRCode, sharePortfolio, copyToClipboard, generateShareableLink } from '../../utils/exportUtils';
@@ -151,7 +151,7 @@ const SharingSettings: React.FC = () => {
           {/* Privacy Settings */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                 <Lock className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -234,7 +234,7 @@ const SharingSettings: React.FC = () => {
           {/* Social Sharing */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                 <Share2 className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -246,30 +246,34 @@ const SharingSettings: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <button 
                 onClick={() => handleSocialShare('linkedin')}
-                className="p-4 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all hover:shadow-lg"
+                className="group p-6 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all hover:shadow-2xl hover:scale-105 relative overflow-hidden"
               >
-                <div className="text-2xl mb-2">📘</div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-400 blur-xl -z-10"></div>
+                <Linkedin className="w-8 h-8 mb-2 mx-auto drop-shadow-lg" />
                 <div className="font-semibold text-sm">LinkedIn</div>
               </button>
               <button 
                 onClick={() => handleSocialShare('twitter')}
-                className="p-4 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white transition-all hover:shadow-lg"
+                className="group p-6 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white transition-all hover:shadow-2xl hover:scale-105 relative overflow-hidden"
               >
-                <div className="text-2xl mb-2">🐦</div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-sky-400 blur-xl -z-10"></div>
+                <Twitter className="w-8 h-8 mb-2 mx-auto drop-shadow-lg" />
                 <div className="font-semibold text-sm">Twitter</div>
               </button>
               <button 
                 onClick={() => handleSocialShare('email')}
-                className="p-4 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white transition-all hover:shadow-lg"
+                className="group p-6 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white transition-all hover:shadow-2xl hover:scale-105 relative overflow-hidden"
               >
-                <div className="text-2xl mb-2">📧</div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-purple-400 blur-xl -z-10"></div>
+                <Mail className="w-8 h-8 mb-2 mx-auto drop-shadow-lg" />
                 <div className="font-semibold text-sm">Email</div>
               </button>
               <button 
                 onClick={() => handleSocialShare('whatsapp')}
-                className="p-4 rounded-xl bg-gradient-to-br from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white transition-all hover:shadow-lg"
+                className="group p-6 rounded-xl bg-gradient-to-br from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white transition-all hover:shadow-2xl hover:scale-105 relative overflow-hidden"
               >
-                <div className="text-2xl mb-2">💬</div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-green-400 blur-xl -z-10"></div>
+                <MessageCircle className="w-8 h-8 mb-2 mx-auto drop-shadow-lg" />
                 <div className="font-semibold text-sm">WhatsApp</div>
               </button>
             </div>
@@ -278,7 +282,7 @@ const SharingSettings: React.FC = () => {
           {/* QR Code */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700 to-slate-800 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                 <Globe className="w-6 h-6 text-white" />
               </div>
               <div>

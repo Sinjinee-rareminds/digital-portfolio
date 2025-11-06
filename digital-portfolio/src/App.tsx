@@ -4,8 +4,9 @@ import { PortfolioProvider } from './contexts/PortfolioContext';
 import HomePage from './pages/HomePage';
 import PortfolioPage from './pages/PortfolioPage';
 import PassportPage from './pages/PassportPage';
+import VideoPortfolioPage from './pages/VideoPortfolioPage';
 import SettingsPage from './pages/SettingsPage';
-import ProfileSettings from './pages/settings/ProfileSettings';
+// import ProfileSettings from './pages/settings/ProfileSettings';
 import ThemeSettings from './pages/settings/ThemeSettings';
 import LayoutSettings from './pages/settings/LayoutSettings';
 import ExportSettings from './pages/settings/ExportSettings';
@@ -23,8 +24,9 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/passport" element={<PassportPage />} />
+              <Route path="/video-portfolio" element={<VideoPortfolioPage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/settings/profile" element={<ProfileSettings />} />
+              {/* <Route path="/settings/profile" element={<ProfileSettings />} /> */}
               <Route path="/settings/theme" element={<ThemeSettings />} />
               <Route path="/settings/layout" element={<LayoutSettings />} />
               <Route path="/settings/export" element={<ExportSettings />} />

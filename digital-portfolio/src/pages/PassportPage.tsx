@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Shield, CheckCircle, XCircle, Award, Book, Globe, Code, Briefcase, Heart, Target, Maximize, Minimize } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Shield, CheckCircle, XCircle, Award, Book, Globe, Code, Briefcase, Heart, Target, Maximize, Minimize, ZoomIn, ZoomOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePortfolio } from '../contexts/PortfolioContext';
 
@@ -11,6 +11,11 @@ const PassportPage: React.FC = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  
+  const minZoom = 0.7;
+  const maxZoom = 1.3;
+  const zoomStep = 0.1;
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -23,6 +28,18 @@ const PassportPage: React.FC = () => {
       document.exitFullscreen();
       setIsFullscreen(false);
     }
+  };
+
+  const zoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + zoomStep, maxZoom));
+  };
+
+  const zoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - zoomStep, minZoom));
+  };
+
+  const resetZoom = () => {
+    setZoomLevel(1);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -510,26 +527,64 @@ const PassportPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 transition-colors duration-300">
+      {/* Fixed Header - Similar to Portfolio Mode */}
+      <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 z-50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Home
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Digital Passport</h1>
             <div className="flex items-center space-x-4">
+              <Link to="/" className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Back to Home
+              </Link>
+              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Digital Passport</h1>
+            </div>
+            <div className="flex items-center space-x-3">
+              {/* Zoom Controls */}
+              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={zoomOut}
+                  disabled={zoomLevel <= minZoom}
+                  className={`p-2 rounded transition-colors ${
+                    zoomLevel <= minZoom
+                      ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={resetZoom}
+                  className="px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                  title="Reset Zoom"
+                >
+                  {Math.round(zoomLevel * 100)}%
+                </button>
+                <button
+                  onClick={zoomIn}
+                  disabled={zoomLevel >= maxZoom}
+                  className={`p-2 rounded transition-colors ${
+                    zoomLevel >= maxZoom
+                      ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+              </div>
+              
               <button
                 onClick={toggleFullscreen}
-                className="flex items-center px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-700"
+                className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-gray-700 dark:text-gray-200"
                 title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
               >
                 {isFullscreen ? (
                   <>
                     <Minimize className="w-4 h-4 mr-2" />
-                    <span className="hidden md:inline">Exit</span>
+                    <span className="hidden md:inline">Exit Fullscreen</span>
                   </>
                 ) : (
                   <>
@@ -538,20 +593,26 @@ const PassportPage: React.FC = () => {
                   </>
                 )}
               </button>
-              <div className="text-sm text-gray-500">
-                Page {currentPage + 1} / {pages.length}
+              
+              <div className="hidden md:flex items-center px-3 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Page {currentPage + 1} / {pages.length}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Passport Book */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4 md:p-8">
-        <div className="relative">
+      {/* Passport Book - with top padding for fixed header */}
+      <div className="flex items-center justify-center min-h-screen pt-20 pb-8 px-4 md:px-8">
+        <div 
+          className="relative transition-transform duration-300 ease-in-out"
+          style={{ transform: `scale(${zoomLevel})` }}
+        >
           {/* Passport Book Container */}
           <div 
-            className="w-full md:w-[500px] lg:w-[600px] h-[600px] md:h-[700px] bg-white rounded-lg shadow-2xl border-4 border-gray-900 relative overflow-hidden"
+            className="w-full md:w-[500px] lg:w-[600px] h-[600px] md:h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border-4 border-gray-900 dark:border-gray-700 relative overflow-hidden transition-colors duration-300"
             style={{ perspective: '1000px' }}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
@@ -578,7 +639,7 @@ const PassportPage: React.FC = () => {
             </AnimatePresence>
             
             {/* Binding Effect */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-r from-gray-800 to-transparent"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-r from-gray-800 dark:from-gray-600 to-transparent"></div>
           </div>
 
           {/* Desktop Navigation Controls */}
@@ -589,8 +650,8 @@ const PassportPage: React.FC = () => {
                 disabled={currentPage === 0}
                 className={`p-4 rounded-full shadow-lg transition-all ${
                   currentPage === 0
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-110'
+                    ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600 hover:scale-110'
                 }`}
                 aria-label="Previous page"
               >
@@ -604,8 +665,8 @@ const PassportPage: React.FC = () => {
                 disabled={currentPage === pages.length - 1}
                 className={`p-4 rounded-full shadow-lg transition-all ${
                   currentPage === pages.length - 1
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-110'
+                    ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600 hover:scale-110'
                 }`}
                 aria-label="Next page"
               >
@@ -615,7 +676,7 @@ const PassportPage: React.FC = () => {
           </div>
 
           {/* Mobile Navigation Hint */}
-          <div className="md:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-xs">
+          <div className="md:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 dark:bg-black/80 text-white px-4 py-2 rounded-full text-xs backdrop-blur-sm">
             Swipe to flip pages
           </div>
         </div>
@@ -623,7 +684,7 @@ const PassportPage: React.FC = () => {
 
       {/* Page Indicators */}
       <div className="fixed bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-40">
-        <div className="flex space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+        <div className="flex space-x-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg transition-colors duration-300">
           {pages.map((page, index) => (
             <button
               key={index}
@@ -633,8 +694,8 @@ const PassportPage: React.FC = () => {
               }}
               className={`transition-all ${
                 index === currentPage 
-                  ? 'w-8 h-3 bg-blue-600 rounded-full' 
-                  : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full'
+                  ? 'w-8 h-3 bg-blue-600 dark:bg-blue-500 rounded-full' 
+                  : 'w-3 h-3 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 rounded-full'
               }`}
               aria-label={`Go to ${page.title}`}
             />

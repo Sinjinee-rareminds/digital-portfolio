@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, BookOpen, ArrowRight, Palette, Layout, Download, Share2 } from 'lucide-react';
+import { Menu, X, User, BookOpen, ArrowRight, Palette, Layout, Download, Share2, Video } from 'lucide-react';
 import ThemeToggle from '../../ThemeToggle';
 
 const Navbar: React.FC = () => {
@@ -146,13 +146,23 @@ const Navbar: React.FC = () => {
                     <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
 
+                  <Link
+                    to="/video-portfolio"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors group"
+                  >
+                    <Video className="w-5 h-5" />
+                    <span className="font-medium">Video Portfolio</span>
+                    <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+
                   <div className="pt-4 pb-2">
                     <p className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                       Settings
                     </p>
                   </div>
 
-                  <Link
+                  {/* <Link
                     to="/settings/profile"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-600 dark:hover:text-purple-400 transition-colors group"
@@ -160,7 +170,7 @@ const Navbar: React.FC = () => {
                     <User className="w-5 h-5" />
                     <span className="font-medium">Profile Settings</span>
                     <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </Link>
+                  </Link> */}
 
                   <Link
                     to="/settings/theme"

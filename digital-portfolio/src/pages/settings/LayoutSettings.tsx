@@ -130,7 +130,7 @@ const LayoutSettings: React.FC = () => {
       <div className="max-w-6xl mx-auto p-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-300">
           <div className="flex items-center space-x-3 mb-8">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
               <Layout className="w-6 h-6 text-white" />
             </div>
             <div>
