@@ -14,6 +14,7 @@ export default {
         'flip': 'flip 0.6s ease-in-out',
         'float': 'float 3s ease-in-out infinite',
         'pulse-slow': 'pulse 3s ease-in-out infinite',
+        'border-glow': 'borderGlow 3s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -37,6 +38,20 @@ export default {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        borderGlow: {
+          '0%, 100%': { 
+            borderColor: 'rgb(191, 219, 254)', // blue-200
+            boxShadow: '0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1)'
+          },
+          '33%': { 
+            borderColor: 'rgb(147, 197, 253)', // blue-300
+            boxShadow: '0 0 25px rgba(96, 165, 250, 0.4), 0 0 50px rgba(96, 165, 250, 0.15)'
+          },
+          '66%': { 
+            borderColor: 'rgb(96, 165, 250)', // blue-400
+            boxShadow: '0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(59, 130, 246, 0.2)'
+          },
         },
       },
       colors: {

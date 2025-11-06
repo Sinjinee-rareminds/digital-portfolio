@@ -13,16 +13,35 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', showLabel = f
   return (
     <button
       onClick={toggleTheme}
-      className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-dark-700 ${className}`}
+      className={`relative rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-dark-700 ${className}`}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
-      {theme === 'light' ? (
-        <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-      ) : (
-        <Sun className="w-5 h-5 text-yellow-500" />
-      )}
+      <input
+        type="checkbox"
+        id="switch"
+        checked={theme === 'dark'}
+        onChange={toggleTheme}
+        className="hidden"
+      />
+      <div className="relative w-6 h-6">
+        <Moon 
+          className="moon-icon absolute inset-0 text-gray-600 transition-transform duration-500"
+          style={{
+            transform: theme === 'dark' ? 'rotate(360deg) scale(0)' : 'scale(1)',
+            transitionDelay: theme === 'dark' ? '0ms' : '200ms'
+          }}
+        />
+        <Sun 
+          className="sun-icon absolute inset-0 text-yellow-500 transition-transform duration-500"
+          style={{
+            transform: theme === 'dark' ? 'scale(1) rotate(360deg)' : 'scale(0)',
+            transitionDelay: theme === 'dark' ? '200ms' : '0ms'
+          }}
+        />
+      </div>
       {showLabel && (
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-3">
           {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
         </span>
       )}

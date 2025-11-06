@@ -1,88 +1,468 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Shield, CheckCircle, XCircle, Award, Book, Globe, Code, Briefcase, Heart, Target, Maximize, Minimize } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { usePortfolio } from '../contexts/PortfolioContext';
 
 const PassportPage: React.FC = () => {
+  const { student, isLoading } = usePortfolio();
   const [currentPage, setCurrentPage] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      nextPage();
+    }
+    if (isRightSwipe) {
+      prevPage();
+    }
+  };
 
   const pages = [
+    // Front Cover
     {
       id: 'cover',
-      title: 'Digital Passport Cover',
+      title: 'Front Cover',
       content: (
-        <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 to-blue-700 text-white">
-          <Shield className="w-20 h-20 mx-auto mb-6" />
-          <h1 className="text-4xl font-bold mb-2">DIGITAL PASSPORT</h1>
-          <p className="text-xl opacity-90 mb-8">Student Portfolio & Credentials</p>
-          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30">
-            <p className="text-sm">Issued by</p>
-            <p className="font-semibold">RAREMINS PLATFORM</p>
+        <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white p-8 relative overflow-hidden">
+          {/* Passport Pattern Background */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)`
+            }} />
+          </div>
+          
+          <div className="relative z-10 text-center">
+            {/* Company Logo */}
+            <div className="mb-8">
+              <div className="w-24 h-24 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center mx-auto border-4 border-white/40 shadow-2xl p-2">
+                <img 
+                  src="/assets/logos/bulb.png" 
+                  alt="Rareminds Logo" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+            
+            <h1 className="text-5xl font-bold mb-4 tracking-wider">DIGITAL</h1>
+            <h1 className="text-5xl font-bold mb-8 tracking-wider">PASSPORT</h1>
+            
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/30 shadow-xl">
+              <p className="text-sm uppercase tracking-widest mb-2 opacity-80">Issued by</p>
+              <p className="text-2xl font-bold">RAREMINDS</p>
+              <p className="text-sm mt-2 opacity-80">Student Portfolio System</p>
+            </div>
+
+            <div className="mt-12 text-xs opacity-60">
+              Official Digital Credential
+            </div>
           </div>
         </div>
       )
     },
+    
+    // Page 1: Personal Info & Verification
     {
       id: 'personal',
       title: 'Personal Information',
       content: (
-        <div className="h-full p-8 bg-gradient-to-br from-gray-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Details</h2>
-          <div className="flex items-start space-x-6 mb-8">
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
-              alt="John Doe"
-              className="w-32 h-40 object-cover border-4 border-gray-300 rounded-lg shadow-lg"
-            />
-            <div className="flex-1">
-              <div className="space-y-3">
-                <div className="flex">
-                  <span className="w-20 text-sm font-medium text-gray-600">Name:</span>
-                  <span className="text-gray-900 font-semibold">John Doe</span>
+        <div className="h-full p-8 bg-gradient-to-br from-amber-50 to-yellow-50 relative">
+          <div className="absolute top-4 right-4 opacity-10">
+            <Shield className="w-32 h-32 text-gray-400" />
+          </div>
+          
+          <div className="relative">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">Personal Details</h2>
+              <span className="text-xs font-mono text-gray-500">Page 01</span>
+            </div>
+            
+            <div className="flex space-x-6 mb-8">
+              <div className="relative">
+                <img
+                  src={student?.profile.profileImage || '/api/placeholder/150/180'}
+                  alt={student?.name || 'Profile'}
+                  className="w-32 h-40 object-cover border-4 border-gray-800 shadow-lg"
+                />
+                <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-lg">
+                  {student?.approval_status === 'approved' ? (
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  ) : (
+                    <XCircle className="w-6 h-6 text-red-600" />
+                  )}
                 </div>
-                <div className="flex">
-                  <span className="w-20 text-sm font-medium text-gray-600">Email:</span>
-                  <span className="text-gray-900">john.doe@example.com</span>
+              </div>
+              
+              <div className="flex-1 space-y-2">
+                <div className="border-b border-gray-300 pb-2">
+                  <p className="text-xs text-gray-500 uppercase">Full Name</p>
+                  <p className="font-bold text-lg text-gray-900">{student?.name || 'N/A'}</p>
                 </div>
-                <div className="flex">
-                  <span className="w-20 text-sm font-medium text-gray-600">Age:</span>
-                  <span className="text-gray-900">22</span>
+                <div className="border-b border-gray-300 pb-2">
+                  <p className="text-xs text-gray-500 uppercase">University</p>
+                  <p className="font-semibold text-gray-800">{student?.university || 'N/A'}</p>
                 </div>
-                <div className="flex">
-                  <span className="w-20 text-sm font-medium text-gray-600">Contact:</span>
-                  <span className="text-gray-900">+1234567890</span>
+                <div className="border-b border-gray-300 pb-2">
+                  <p className="text-xs text-gray-500 uppercase">Field of Study</p>
+                  <p className="font-semibold text-gray-800">{student?.branch_field || 'N/A'}</p>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <div className="border-t pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Passport ID</p>
-                <p className="font-mono text-lg font-bold text-blue-600">DP2024001</p>
+            
+            <div className="bg-white rounded-lg p-4 shadow-md border-l-4 border-blue-600 mb-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-gray-500">Email</p>
+                  <p className="text-sm font-mono text-gray-800">{student?.email}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Contact</p>
+                  <p className="text-sm font-mono text-gray-800">{student?.contact_number || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Location</p>
+                  <p className="text-sm text-gray-800">{student?.district_name || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">ID Number</p>
+                  <p className="text-sm font-mono font-bold text-blue-600">{student?.universityId}</p>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-green-600 font-semibold">✓ VERIFIED</span>
-              </div>
+            </div>
+            
+            {/* Verification Stamp */}
+            <div className="absolute bottom-8 right-8">
+              {student?.approval_status === 'approved' ? (
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full border-4 border-green-600 flex items-center justify-center transform -rotate-12">
+                    <div className="text-center">
+                      <CheckCircle className="w-10 h-10 text-green-600 mx-auto mb-1" />
+                      <p className="text-green-600 font-bold text-xs uppercase">Verified by</p>
+                      <p className="text-green-600 font-bold text-sm">Rareminds</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full border-4 border-red-600 flex items-center justify-center transform -rotate-12">
+                    <div className="text-center">
+                      <XCircle className="w-10 h-10 text-red-600 mx-auto mb-1" />
+                      <p className="text-red-600 font-bold text-xs uppercase">Not Verified</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       )
     },
+    
+    // Page 2: Education
     {
       id: 'education',
       title: 'Education',
       content: (
-        <div className="h-full p-8 bg-gradient-to-br from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Educational Background</h2>
-          <div className="bg-white rounded-lg p-6 shadow-md border-l-4 border-blue-500">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Bachelor of Technology</h3>
-            <p className="text-gray-700 font-medium mb-2">University of Technology</p>
-            <p className="text-gray-600 mb-2">Computer Science Engineering</p>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">2020 - 2024</span>
-              <span className="font-semibold text-blue-600">8.5 CGPA</span>
+        <div className="h-full p-8 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Book className="w-6 h-6 text-blue-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Education</h2>
             </div>
+            <span className="text-xs font-mono text-gray-500">Page 02</span>
+          </div>
+          
+          <div className="space-y-4">
+            {student?.profile.education?.slice(0, 2).map((edu) => (
+              <div key={edu.id} className="bg-white rounded-lg p-5 shadow-md border-l-4 border-blue-600">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-lg text-gray-900">{edu.degree}</h3>
+                  {edu.grade && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                      {edu.grade}
+                    </span>
+                  )}
+                </div>
+                <p className="text-gray-700 font-medium mb-1">{edu.institution}</p>
+                <p className="text-gray-600 text-sm mb-2">{edu.field}</p>
+                <p className="text-xs text-gray-500">{edu.startDate} - {edu.endDate || 'Present'}</p>
+              </div>
+            ))}
+            
+            {(!student?.profile.education || student.profile.education.length === 0) && (
+              <div className="text-center text-gray-500 py-8">
+                <Book className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No education records available</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    
+    // Page 3: Skills
+    {
+      id: 'skills',
+      title: 'Skills',
+      content: (
+        <div className="h-full p-8 bg-gradient-to-br from-purple-50 to-pink-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Code className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Skills</h2>
+            </div>
+            <span className="text-xs font-mono text-gray-500">Page 03</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {student?.profile.skills?.slice(0, 8).map((skill, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 shadow-sm border-l-3 border-purple-400">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="font-semibold text-gray-900">{skill.name}</p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">{skill.category || 'General'}</span>
+                  <span className="text-xs font-semibold text-purple-600">{skill.level}</span>
+                </div>
+              </div>
+            ))}
+            
+            {(!student?.profile.skills || student.profile.skills.length === 0) && (
+              <div className="col-span-2 text-center text-gray-500 py-8">
+                <Code className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No skills listed</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    
+    // Page 4: Languages
+    {
+      id: 'languages',
+      title: 'Languages',
+      content: (
+        <div className="h-full p-8 bg-gradient-to-br from-green-50 to-emerald-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Globe className="w-6 h-6 text-green-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Languages</h2>
+            </div>
+            <span className="text-xs font-mono text-gray-500">Page 04</span>
+          </div>
+          
+          <div className="space-y-3">
+            {student?.profile.languages?.map((language, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 shadow-sm flex items-center justify-between border-l-4 border-green-500">
+                <div className="flex items-center space-x-3">
+                  <Globe className="w-5 h-5 text-green-600" />
+                  <span className="font-semibold text-gray-900">{language.name}</span>
+                </div>
+                <span className="text-sm font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                  {language.proficiency}
+                </span>
+              </div>
+            ))}
+            
+            {(!student?.profile.languages || student.profile.languages.length === 0) && (
+              <div className="text-center text-gray-500 py-12">
+                <Globe className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No languages listed</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    
+    // Page 5: Projects
+    {
+      id: 'projects',
+      title: 'Projects',
+      content: (
+        <div className="h-full p-8 bg-gradient-to-br from-orange-50 to-amber-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Briefcase className="w-6 h-6 text-orange-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Projects</h2>
+            </div>
+            <span className="text-xs font-mono text-gray-500">Page 05</span>
+          </div>
+          
+          <div className="space-y-4 overflow-y-auto max-h-[500px]">
+            {student?.profile.projects?.slice(0, 3).map((project) => (
+              <div key={project.id} className="bg-white rounded-lg p-4 shadow-md border-l-4 border-orange-500">
+                <h3 className="font-bold text-gray-900 mb-2">{project.title}</h3>
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{project.description}</p>
+                <div className="flex flex-wrap gap-1">
+                  {project.technologies?.slice(0, 4).map((tech, i) => (
+                    <span key={i} className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+            
+            {(!student?.profile.projects || student.profile.projects.length === 0) && (
+              <div className="text-center text-gray-500 py-12">
+                <Briefcase className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No projects listed</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    
+    // Page 6: Achievements & Certifications
+    {
+      id: 'achievements',
+      title: 'Achievements',
+      content: (
+        <div className="h-full p-8 bg-gradient-to-br from-yellow-50 to-amber-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Award className="w-6 h-6 text-yellow-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Achievements</h2>
+            </div>
+            <span className="text-xs font-mono text-gray-500">Page 06</span>
+          </div>
+          
+          <div className="space-y-3">
+            {student?.profile.achievements?.slice(0, 4).map((achievement) => (
+              <div key={achievement.id} className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-yellow-500">
+                <div className="flex items-start space-x-3">
+                  <Award className="w-5 h-5 text-yellow-600 mt-1 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">{achievement.title}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{achievement.description}</p>
+                    <p className="text-xs text-gray-500">{achievement.date}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {student?.profile.certifications?.slice(0, 2).map((cert) => (
+              <div key={cert.id} className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-blue-500">
+                <div className="flex items-start space-x-3">
+                  <Shield className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">{cert.name}</h3>
+                    <p className="text-sm text-gray-600">{cert.issuer}</p>
+                    <p className="text-xs text-gray-500">{cert.date}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {(!student?.profile.achievements || student.profile.achievements.length === 0) &&
+             (!student?.profile.certifications || student.profile.certifications.length === 0) && (
+              <div className="text-center text-gray-500 py-12">
+                <Award className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No achievements or certifications</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    
+    // Page 7: Hobbies
+    {
+      id: 'hobbies',
+      title: 'Hobbies',
+      content: (
+        <div className="h-full p-8 bg-gradient-to-br from-pink-50 to-rose-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Heart className="w-6 h-6 text-pink-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Hobbies</h2>
+            </div>
+            <span className="text-xs font-mono text-gray-500">Page 07</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {student?.profile.hobbies?.map((hobby, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 shadow-sm text-center border-2 border-pink-200">
+                <Heart className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                <p className="font-medium text-gray-900">{hobby}</p>
+              </div>
+            ))}
+            
+            {(!student?.profile.hobbies || student.profile.hobbies.length === 0) && (
+              <div className="col-span-2 text-center text-gray-500 py-12">
+                <Heart className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No hobbies listed</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    },
+    
+    // Page 8: Interests
+    {
+      id: 'interests',
+      title: 'Areas of Interest',
+      content: (
+        <div className="h-full p-8 bg-gradient-to-br from-teal-50 to-cyan-50">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Target className="w-6 h-6 text-teal-600" />
+              <h2 className="text-2xl font-bold text-gray-900 uppercase">Interests</h2>
+            </div>
+            <span className="text-xs font-mono text-gray-500">Page 08</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {student?.profile.interests?.map((interest, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-teal-500">
+                <div className="flex items-center space-x-2">
+                  <Target className="w-5 h-5 text-teal-600" />
+                  <p className="font-medium text-gray-900">{interest}</p>
+                </div>
+              </div>
+            ))}
+            
+            {(!student?.profile.interests || student.profile.interests.length === 0) && (
+              <div className="col-span-2 text-center text-gray-500 py-12">
+                <Target className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>No interests listed</p>
+              </div>
+            )}
           </div>
         </div>
       )
@@ -91,91 +471,172 @@ const PassportPage: React.FC = () => {
 
   const nextPage = () => {
     if (currentPage < pages.length - 1) {
+      setDirection(1);
       setCurrentPage(currentPage + 1);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 0) {
+      setDirection(-1);
       setCurrentPage(currentPage - 1);
     }
   };
 
+  const pageVariants = {
+    enter: (direction: number) => ({
+      rotateY: direction > 0 ? 90 : -90,
+      opacity: 0,
+    }),
+    center: {
+      rotateY: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      rotateY: direction > 0 ? -90 : 90,
+      opacity: 0,
+    }),
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading passport...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center text-gray-600 hover:text-gray-900">
+            <Link to="/" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Home
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Digital Passport</h1>
-            <div className="text-sm text-gray-500">
-              Page {currentPage + 1} of {pages.length}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleFullscreen}
+                className="flex items-center px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-700"
+                title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+              >
+                {isFullscreen ? (
+                  <>
+                    <Minimize className="w-4 h-4 mr-2" />
+                    <span className="hidden md:inline">Exit</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize className="w-4 h-4 mr-2" />
+                    <span className="hidden md:inline">Fullscreen</span>
+                  </>
+                )}
+              </button>
+              <div className="text-sm text-gray-500">
+                Page {currentPage + 1} / {pages.length}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Passport Book */}
-      <div className="flex items-center justify-center min-h-screen p-8">
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4 md:p-8">
         <div className="relative">
           {/* Passport Book Container */}
-          <div className="w-96 h-[600px] bg-white rounded-lg shadow-2xl border-4 border-gray-800 relative overflow-hidden">
-            {/* Page Content */}
-            <div className="h-full">
-              {pages[currentPage].content}
-            </div>
+          <div 
+            className="w-full md:w-[500px] lg:w-[600px] h-[600px] md:h-[700px] bg-white rounded-lg shadow-2xl border-4 border-gray-900 relative overflow-hidden"
+            style={{ perspective: '1000px' }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* Page Flip Animation */}
+            <AnimatePresence initial={false} custom={direction} mode="wait">
+              <motion.div
+                key={currentPage}
+                custom={direction}
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  rotateY: { type: 'spring', stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.2 }
+                }}
+                className="h-full"
+                style={{ transformStyle: 'preserve-3d' }}
+              >
+                {pages[currentPage].content}
+              </motion.div>
+            </AnimatePresence>
             
-            {/* Page Number */}
-            <div className="absolute bottom-4 right-4 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
-              {currentPage + 1}
+            {/* Binding Effect */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-r from-gray-800 to-transparent"></div>
+          </div>
+
+          {/* Desktop Navigation Controls */}
+          <div className="hidden md:block">
+            <div className="absolute -left-16 lg:-left-20 top-1/2 transform -translate-y-1/2">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 0}
+                className={`p-4 rounded-full shadow-lg transition-all ${
+                  currentPage === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-110'
+                }`}
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="absolute -right-16 lg:-right-20 top-1/2 transform -translate-y-1/2">
+              <button
+                onClick={nextPage}
+                disabled={currentPage === pages.length - 1}
+                className={`p-4 rounded-full shadow-lg transition-all ${
+                  currentPage === pages.length - 1
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-110'
+                }`}
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
             </div>
           </div>
 
-          {/* Navigation Controls */}
-          <div className="absolute -left-16 top-1/2 transform -translate-y-1/2">
-            <button
-              onClick={prevPage}
-              disabled={currentPage === 0}
-              className={`p-3 rounded-full shadow-lg transition-all ${
-                currentPage === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="absolute -right-16 top-1/2 transform -translate-y-1/2">
-            <button
-              onClick={nextPage}
-              disabled={currentPage === pages.length - 1}
-              className={`p-3 rounded-full shadow-lg transition-all ${
-                currentPage === pages.length - 1
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
+          {/* Mobile Navigation Hint */}
+          <div className="md:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-xs">
+            Swipe to flip pages
           </div>
         </div>
       </div>
 
       {/* Page Indicators */}
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2">
+      <div className="fixed bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-40">
         <div className="flex space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-          {pages.map((_, index) => (
+          {pages.map((page, index) => (
             <button
               key={index}
-              onClick={() => setCurrentPage(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentPage ? 'bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'
+              onClick={() => {
+                setDirection(index > currentPage ? 1 : -1);
+                setCurrentPage(index);
+              }}
+              className={`transition-all ${
+                index === currentPage 
+                  ? 'w-8 h-3 bg-blue-600 rounded-full' 
+                  : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full'
               }`}
+              aria-label={`Go to ${page.title}`}
             />
           ))}
         </div>

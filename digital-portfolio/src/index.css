@@ -12,6 +12,19 @@
   }
 }
 
+/* Background Ripple Effect Animation */
+@keyframes cell-ripple {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
 @layer components {
   .passport-page {
     perspective: 1000px;

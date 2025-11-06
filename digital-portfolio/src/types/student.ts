@@ -126,7 +126,7 @@ export interface Training {
   skills: string[];
 }
 
-export type PortfolioLayout = 'modern' | 'classic' | 'creative' | 'minimal';
+export type PortfolioLayout = 'modern' | 'classic' | 'creative' | 'minimal' | 'splitscreen' | 'aipersona' | 'infographic' | 'resume' | 'journey';
 
 export type AnimationType = 'fade' | 'slide' | 'bounce' | 'float' | 'none';
 

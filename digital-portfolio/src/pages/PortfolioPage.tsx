@@ -1,121 +1,132 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Settings, Maximize, Minimize } from 'lucide-react';
+import { usePortfolio } from '../contexts/PortfolioContext';
+import ModernLayout from '../components/portfolio/layouts/ModernLayout';
+import CreativeLayout from '../components/portfolio/layouts/CreativeLayout';
+import SplitScreenLayout from '../components/portfolio/layouts/SplitScreenLayout';
+import AIPersonaLayout from '../components/portfolio/layouts/AIPersonaLayout';
+import InfographicDashboard from '../components/portfolio/layouts/InfographicDashboard';
+import CompactResumeDashboard from '../components/portfolio/layouts/CompactResumeDashboard';
+import JourneyMapLayout from '../components/portfolio/layouts/JourneyMapLayout';
 
 const PortfolioPage: React.FC = () => {
-  console.log('PortfolioPage rendering...');
+  const { student, settings, isLoading } = usePortfolio();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  console.log('PortfolioPage rendering...', { student, settings, isLoading });
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading portfolio...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!student) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-400">No student data available</p>
+          <Link to="/" className="text-blue-600 hover:underline mt-4 inline-block">
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const renderLayout = () => {
+    const layoutProps = {
+      student,
+      primaryColor: settings.primaryColor,
+      secondaryColor: settings.secondaryColor,
+      accentColor: settings.accentColor,
+      animation: settings.animation,
+    };
+
+    switch (settings.layout) {
+      case 'modern':
+        return <ModernLayout {...layoutProps} />;
+      case 'creative':
+        return <CreativeLayout {...layoutProps} />;
+      case 'splitscreen':
+        return <SplitScreenLayout {...layoutProps} />;
+      case 'aipersona':
+        return <AIPersonaLayout {...layoutProps} />;
+      case 'infographic':
+        return <InfographicDashboard {...layoutProps} />;
+      case 'resume':
+        return <CompactResumeDashboard {...layoutProps} />;
+      case 'journey':
+        return <JourneyMapLayout {...layoutProps} />;
+      default:
+        return <ModernLayout {...layoutProps} />;
+    }
+  };
   
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center text-gray-600 hover:text-gray-900">
+              <Link to="/" className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Home
               </Link>
-              <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-2xl font-bold text-gray-900">Portfolio Mode</h1>
+              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Portfolio Mode</h1>
             </div>
-            <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Customize
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={toggleFullscreen}
+                className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+              >
+                {isFullscreen ? (
+                  <>
+                    <Minimize className="w-4 h-4 mr-2" />
+                    Exit Fullscreen
+                  </>
+                ) : (
+                  <>
+                    <Maximize className="w-4 h-4 mr-2" />
+                    Fullscreen
+                  </>
+                )}
+              </button>
+              <Link 
+                to="/settings" 
+                className="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                style={{ backgroundColor: settings.primaryColor, color: 'white' }}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Customize
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <div className="flex items-center space-x-6">
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
-                alt="John Doe"
-                className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-              />
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">John Doe</h1>
-                <p className="text-lg text-gray-600 mb-2">Computer Science Engineering</p>
-                <p className="text-gray-500">University of Technology</p>
-                <div className="flex space-x-4 mt-4">
-                  <a href="#" className="text-blue-600 hover:text-blue-800">GitHub</a>
-                  <a href="#" className="text-blue-600 hover:text-blue-800">LinkedIn</a>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-gray-700 leading-relaxed">
-                Passionate full-stack developer with expertise in React, Node.js, and cloud technologies. 
-                Love creating innovative solutions and learning new technologies.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-blue-800 mb-6">Technical Skills</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-900">JavaScript</span>
-                  <span className="text-sm text-gray-500">9/10</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '90%' }}></div>
-                </div>
-                <div className="text-xs text-gray-500 mt-1">Programming Languages</div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-900">React</span>
-                  <span className="text-sm text-gray-500">9/10</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '90%' }}></div>
-                </div>
-                <div className="text-xs text-gray-500 mt-1">Frontend Frameworks</div>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-900">Node.js</span>
-                  <span className="text-sm text-gray-500">8/10</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '80%' }}></div>
-                </div>
-                <div className="text-xs text-gray-500 mt-1">Backend Technologies</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-blue-800 mb-6">Featured Projects</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop"
-                  alt="E-Commerce Platform"
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">E-Commerce Platform</h3>
-                  <p className="text-gray-600 mb-4">Full-stack e-commerce solution with React frontend and Node.js backend</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-3 py-1 text-sm rounded-full text-white bg-blue-500">React</span>
-                    <span className="px-3 py-1 text-sm rounded-full text-white bg-blue-500">Node.js</span>
-                    <span className="px-3 py-1 text-sm rounded-full text-white bg-blue-500">MongoDB</span>
-                  </div>
-                  <div className="flex space-x-4">
-                    <a href="#" className="text-sm font-medium text-blue-600 hover:underline">View Code</a>
-                    <a href="#" className="text-sm font-medium text-blue-600 hover:underline">Live Demo</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Layout Content with top padding for fixed header */}
+      <div className="pt-20">
+        {renderLayout()}
       </div>
     </div>
   );
